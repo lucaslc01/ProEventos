@@ -34,7 +34,7 @@ namespace ProEventos.API
 
             services.AddScoped<IEventoService, EventoService>(); // Aqui instancia EventoService (new EventoService)
             
-            services.AddScoped<IGeralPersist, GeralPersist>(); //toda vez que for requisitado IGeralPersist, injeta IGeralPersist
+            services.AddScoped<IGeralPersist, GeralPersist>(); //toda vez que for requisitado IGeralPersist, injeta GeralPersist
             services.AddScoped<IEventoPersist, EventoPersist>(); //toda vez que for requisitado  IEventoPersist, injeta EventoPersist
 
             services.AddCors();

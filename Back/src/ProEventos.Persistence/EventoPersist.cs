@@ -16,6 +16,8 @@ namespace ProEventos.Persistence
         public EventoPersist(ProEventosContext context)
         {
             _context = context;
+
+            //não rastrear o registro na entidade (banco de dados). Assim será possível alterar uma variável da dados com patch
             _context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
         }
        

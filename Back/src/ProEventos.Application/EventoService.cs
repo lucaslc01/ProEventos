@@ -44,13 +44,14 @@ namespace ProEventos.Application
         {
             try
             {
-                var evento = await _eventoPersist.GetEventoByIdAsync(eventoId, false);
+                Evento evento = await _eventoPersist.GetEventoByIdAsync(eventoId, false);
                 if (evento== null) return null;
 
                 model.Id = evento.Id;
 
+                //ligando o tracking
                 _geralPersist.Update(model);
-                if(await _geralPersist.SaveChangesAsync()){
+                if(await _geralPersist.SaveChangesAsync()){ //salvando a alteração na entidade (banco de dados)
                     return await _eventoPersist.GetEventoByIdAsync(model.Id, false);
                 }
                 return null;
