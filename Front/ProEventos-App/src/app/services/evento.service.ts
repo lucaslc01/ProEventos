@@ -13,8 +13,8 @@ export class EventoService {
 
   constructor(private http: HttpClient) { }
 
-  //para poder usar o subscribe em uma função, é necessário declarar a função a ser consultada abaxio como do tipo Observable para que seja
-  //possível se inscrever nela.
+  //para poder usar o subscribe em uma função, é necessário declarar a função a ser consultada abaixo como do tipo Observable para que seja
+  //possível se inscrever nela (acompanhar a função durante a execução).
   public getEventos(): Observable<Evento[]> {
     return this.http.get<Evento[]>(this.baseURL);
   }

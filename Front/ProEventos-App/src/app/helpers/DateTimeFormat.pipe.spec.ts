@@ -1,6 +1,6 @@
 /* tslint:disable:no-unused-variable */
 
-import { TestBed, async } from '@angular/core/testing';
+import { LOCALE_ID } from '@angular/core';
 import { DateTimeFormatPipe } from './DateTimeFormat.pipe';
 
 describe('Pipe: DateTimeFormate', () => {

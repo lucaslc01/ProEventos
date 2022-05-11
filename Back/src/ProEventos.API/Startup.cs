@@ -10,6 +10,8 @@ using ProEventos.Application.Contratos;
 using ProEventos.Persistence;
 using ProEventos.Persistence.Contextos;
 using ProEventos.Persistence.Contratos;
+using AutoMapper;
+using System;
 
 namespace ProEventos.API
 {
@@ -31,6 +33,10 @@ namespace ProEventos.API
 
             //nos controllers o newtonsoft ficará encarregado de não entrar em loops infinitos no retorno de um objeto evento que tenha um lote que tenha um evento...(e assim por diante).
             services.AddControllers().AddNewtonsoftJson(x => x.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+
+            //dentro do meu domínio atual no currentDomain existe diversos assemblies. O automapper procura quem está herdando de profile.
+            //Faz a injeção do meu objeto
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             services.AddScoped<IEventoService, EventoService>(); // Aqui instancia EventoService (new EventoService)
             

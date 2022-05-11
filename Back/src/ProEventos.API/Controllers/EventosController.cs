@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using ProEventos.Persistence;
 using ProEventos.Domain;
-using ProEventos.Persistence.Contextos;
 using ProEventos.Application.Contratos;
 using Microsoft.AspNetCore.Http;
+using ProEventos.Application.Dtos;
 
 namespace ProEventos.API.Controllers
 {
@@ -28,8 +24,9 @@ namespace ProEventos.API.Controllers
         {
             try
             {
+                //atribui todos os eventos à variável eventos.
                 var eventos = await _eventoService.GetAllEventosAsync(true);
-                if (eventos == null) return NotFound("Nenhum evento encontrado. ");
+                if (eventos == null) return NoContent();
 
                 return Ok(eventos);
             }
@@ -45,7 +42,7 @@ namespace ProEventos.API.Controllers
             try
             {
                 var eventos = await _eventoService.GetEventoByIdAsync(id, true);
-                if (eventos == null) return NotFound("Nenhum evento encontrado. ");
+                if (eventos == null) return NoContent();
 
                 return Ok(eventos);
             }
@@ -61,7 +58,7 @@ namespace ProEventos.API.Controllers
             try
             {
                 var eventos = await _eventoService.GetAllEventosByTemaAsync(tema, true);
-                if (eventos == null) return NotFound("Eventos por tema não encontrados. ");
+                if (eventos == null) return NoContent();
 
                 return Ok(eventos);
             }
@@ -72,7 +69,7 @@ namespace ProEventos.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post(Evento model){
+        public async Task<IActionResult> Post(EventoDto model){
             try
             {
                 var eventos = await _eventoService.AddEventos(model);
@@ -87,7 +84,7 @@ namespace ProEventos.API.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put(int id, Evento model){
+        public async Task<IActionResult> Put(int id, EventoDto model){
             try
             {
                 var eventos = await _eventoService.UpdateEvento(id, model);
