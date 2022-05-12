@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using ProEventos.Domain;
 using ProEventos.Application.Contratos;
 using Microsoft.AspNetCore.Http;
 using ProEventos.Application.Dtos;
@@ -102,7 +101,7 @@ namespace ProEventos.API.Controllers
         public async Task<IActionResult> Delete(int id){
             try
             {
-                return await _eventoService.DeleteEvento(id) ? Ok("Deletado") : BadRequest("Evento não deletado");
+                return await _eventoService.DeleteEvento(id) ? Ok(new { message = "Deletado" } ) : BadRequest("Evento não deletado");
             }
             catch (Exception ex)
             {
