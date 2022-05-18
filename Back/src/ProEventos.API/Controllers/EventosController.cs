@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using ProEventos.Application.Contratos;
 using Microsoft.AspNetCore.Http;
 using ProEventos.Application.Dtos;
+using ProEventos.Persistence.Models;
+using ProEventos.API.Extensions;
 
 namespace ProEventos.API.Controllers
 {
@@ -19,13 +21,15 @@ namespace ProEventos.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get() //o IActionResult retorna um objeto de resposta contendo o número do erro de requisição http
+        public async Task<IActionResult> Get([FromQuery]PageParams pageParams) //o IActionResult retorna um objeto de resposta contendo o número do erro de requisição http
         {
             try
             {
                 //atribui todos os eventos à variável eventos.
-                var eventos = await _eventoService.GetAllEventosAsync(true);
+                var eventos = await _eventoService.GetAllEventosAsync(pageParams, true);
                 if (eventos == null) return NoContent();
+
+                Response.AddPagination(eventos.CurrentPage, eventos.PageSize, eventos.TotalCount, eventos.TotalPages);
 
                 return Ok(eventos);
             }
@@ -41,22 +45,6 @@ namespace ProEventos.API.Controllers
             try
             {
                 var eventos = await _eventoService.GetEventoByIdAsync(id, true);
-                if (eventos == null) return NoContent();
-
-                return Ok(eventos);
-            }
-            catch (Exception ex)
-            {
-                return this.StatusCode(StatusCodes.Status500InternalServerError, $"Erro ao tentar recuperar eventos. Erro: {ex.Message}");
-            }
-        }
-
-        [HttpGet("{tema}/tema")] //o '/tema' é para identificar que está sendo passado o valor de tema na URL
-        public async Task<IActionResult> GetByTema(string tema)
-        {
-            try
-            {
-                var eventos = await _eventoService.GetAllEventosByTemaAsync(tema, true);
                 if (eventos == null) return NoContent();
 
                 return Ok(eventos);

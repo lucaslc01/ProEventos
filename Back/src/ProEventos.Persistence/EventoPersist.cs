@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using ProEventos.Domain;
 using ProEventos.Persistence.Contextos;
 using ProEventos.Persistence.Contratos;
+using ProEventos.Persistence.Models;
 
 namespace ProEventos.Persistence
 {
@@ -20,8 +21,25 @@ namespace ProEventos.Persistence
             //não rastrear o registro na entidade (banco de dados). Assim será possível alterar uma variável da dados com patch
             _context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
         }
-       
-        public async Task<Evento> GetEventoByIdAsync(int eventoId, bool includePalestrantes = false)
+
+        //retorna todos os eventos
+        public async Task<PageList<Evento>> GetAllEventosAsync(PageParams pageParams, bool includePalestrantes = false)
+        {
+            IQueryable<Evento> query = _context.Eventos.Include(evento => evento.Lotes).Include(evento => evento.RedesSociais);
+
+            if(includePalestrantes){
+                query = query.Include(evento => evento.PalestrantesEventos).ThenInclude(palestranteEvento => palestranteEvento.Palestrante);
+            }
+
+            //Dado um evento, para cada evento que existir, procura o tema, converte para lower case e analisa se esse tema contém um tema 
+            //passado como parâmetro (tema) e convertido para lower case.
+            query = query.AsNoTracking().Where(e => (e.Tema.ToLower().Contains(pageParams.Term.ToLower())) 
+                                                        || (e.Local.ToLower().Contains(pageParams.Term.ToLower())) ).OrderBy(evento => evento.Id);
+
+            return await PageList<Evento>.CreateAsync(query, pageParams.PageNumber, pageParams.pageSize);
+        }
+
+                public async Task<Evento> GetEventoByIdAsync(int eventoId, bool includePalestrantes = false)
         {
             IQueryable<Evento> query = _context.Eventos.Include(evento => evento.Lotes).Include(evento => evento.RedesSociais);
 
@@ -34,35 +52,6 @@ namespace ProEventos.Persistence
             query = query.OrderBy(evento => evento.Id).Where(evento => evento.Id == eventoId);
 
             return await query.FirstOrDefaultAsync();
-        }
-
-        //retorna todos os eventos
-        public async Task<Evento[]> GetAllEventosAsync(bool includePalestrantes = false)
-        {
-            IQueryable<Evento> query = _context.Eventos.Include(evento => evento.Lotes).Include(evento => evento.RedesSociais);
-
-            if(includePalestrantes){
-                query = query.Include(evento => evento.PalestrantesEventos).ThenInclude(palestranteEvento => palestranteEvento.Palestrante);
-            }
-
-            query = query.OrderBy(evento => evento.Id);
-
-            return await query.ToArrayAsync();
-        }
-
-        public async Task<Evento[]> GetAllEventosByTemaAsync(string tema, bool includePalestrantes)
-        {
-            IQueryable<Evento> query = _context.Eventos.Include(evento => evento.Lotes).Include(evento => evento.RedesSociais);
-
-            if(includePalestrantes){
-                query = query.Include(evento => evento.PalestrantesEventos).ThenInclude(palestranteEvento => palestranteEvento.Palestrante);
-            }
-
-            //Dado um evento, para cada evento que existir, procura o tema, converte para lower case e analisa se esse tema contém um tema 
-            //passado como parâmetro (tema) e convertido para lower case.
-            query = query.OrderBy(evento => evento.Id).Where(evento => evento.Tema.ToLower().Contains(tema.ToLower()));
-
-            return await query.ToArrayAsync();
         }
 
     }
